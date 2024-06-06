@@ -32,17 +32,40 @@ class ServerController{
 	
 	/**
 	 * bytesToHex
+	 *
+	 * @param bytes - A byte array that will be converted into a HexString
+	 * @return hex - A string containing the HexString converted message as output.
+	 */
+	
+	
+	public String bytesToHex(byte[] bytes) {
+		String hex = ""; // Initialize the local variable
+		
+		// Converts the byte array into HexString object
+		StringBuffer hexString = new StringBuffer();
+		
+		for (int i = 0; i < bytes.length; ++i) {
+			hexString.append(Integer.toHexString(0xFF & bytes[i]));
+		}
+		
+		hex = hexString.toString();
+		
+		return hex;
+	}
+	
+	/**
+	 * generateCheckSum
 	 * 
 	 * Adapted from:
 	 * https://www.tutorialspoint.com/java_cryptography/java_cryptography_message_digest.htm#:~:text=You%20can%20generate%20the%20message,digest%20using%20the%20digest%20method.
 	 * 
 	 * @param userData - A string to be converted into a SHA-256 checksum.
-	 * @return hex - A string containing the HexString converted message as output.
+	 * @return checkSum - A string containing the HexString converted message as output.
 	 */
 	
-	public String bytesToHex(String userData) {
+	public String generateCheckSum(String userData) {
 		
-		String hex = ""; // Initialize the local variable
+		String checkSum = "";
 		
 		// Create MessageDigest object
     	try {
@@ -53,21 +76,14 @@ class ServerController{
 			
 			// Computes the message digest
 			byte[] digest = md.digest();
-			System.out.println(digest);
 			
-			// Converts the byte array into HexString object
-			StringBuffer hexString = new StringBuffer();
+			checkSum = bytesToHex(digest);
 			
-			for (int i = 0; i < digest.length; ++i) {
-				hexString.append(Integer.toHexString(0xFF & digest[i]));
-			}
-			
-			hex = hexString.toString();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		
-		return hex;
+		return checkSum;
 	}
 	
     @RequestMapping("/hash")
@@ -76,6 +92,6 @@ class ServerController{
     	// Update 6-3 - Added student name.
     	String data = "Hello Alex Baires!";
     	
-        return "<p>data: " + data + "<p>SHA-256: CheckSum Value: " + bytesToHex(data);
+        return "<p>data: " + data + "<p>SHA-256: CheckSum Value: " + generateCheckSum(data);
     }
 }
