@@ -11,6 +11,8 @@ package com.snhu.sslserver;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,6 +31,11 @@ public class SslServerApplication {
 @RestController
 class ServerController {
 
+	// Logger taken from below tutorial:
+		// https://www.digitalocean.com/community/tutorials/logger-in-java-logging-example
+
+		private static final Logger logger = Logger.getLogger(ServerController.class.getName());
+
 	/**
 	 * bytesToHex
 	 *
@@ -40,10 +47,10 @@ class ServerController {
 		String hex;
 
 		// Converts byte array into HexString object
-		StringBuffer hexString = new StringBuffer();
+		StringBuilder hexString = new StringBuilder();
 
 		for (int i = 0; i < bytes.length; ++i) {
-			hexString.append(Integer.toHexString(0xFF & bytes[i]));
+			hexString.append(String.format("%02x", bytes[i]));
 		}
 
 		hex = hexString.toString();
@@ -63,6 +70,10 @@ class ServerController {
 
 	 public String generateCheckSum(String userData) {
 
+		if (userData.isEmpty()) { // Error handling
+			throw new IllegalArgumentException("User data must not be empty");
+		}
+
 		String checkSum ="";
 		// Create Message Digest
 		try {
@@ -77,7 +88,8 @@ class ServerController {
 			checkSum = bytesToHex(digest);
 
 		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalArgumentException(e);
+			logger.log(Level.SEVERE, "Algorithm not found/does not exist", e);
+			throw new IllegalArgumentException("Algorithm not found/does not exist", e);
 		}
 
 		// Create Message Digest
