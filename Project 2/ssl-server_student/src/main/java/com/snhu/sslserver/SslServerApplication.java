@@ -19,7 +19,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @SpringBootApplication
 public class SslServerApplication {
 
@@ -64,20 +63,20 @@ class ServerController {
 	 * Adapted from:
 	 * https://www.tutorialspoint.com/java_cryptography/java_cryptography_message_digest.htm#:~:text=You%20can%20generate%20the%20message,digest%20using%20the%20digest%20method.
 	 * 
-	 * @param userData - A string to be converted into a SHA-256 checksum.
+	 * @param userData - A string to be converted into a SHA-3-384 checksum.
 	 * @return checkSum - A string containing the HexString converted message as output.
 	 */
 
 	 public String generateCheckSum(String userData) {
 
-		if (userData.isEmpty()) { // Error handling
+		if (userData.isEmpty()) { // Error handling and input validation
 			throw new IllegalArgumentException("User data must not be empty");
 		}
 
 		String checkSum ="";
 		// Create Message Digest
 		try {
-			MessageDigest md = MessageDigest.getInstance("SHA3-384");
+			MessageDigest md = MessageDigest.getInstance("SHA-384");
 
 			// Pass data to the created MessageDigest object
 			md.update(userData.getBytes());
@@ -102,6 +101,11 @@ class ServerController {
 		String data = "Artemis Financial, developed by Alex Baires";
 
 		return "<p>Static data: " + data + "<p>SHA3-384 Checksum Value: " + generateCheckSum(data);
+	}
+
+	@RequestMapping("/")
+	public String rootHandler() {
+		return "<p>Error: Please provide a valid web address";
 	}
 
 }
